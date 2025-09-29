@@ -17,7 +17,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=wolf_auth
     ports:
-      - "5432:5432"
+      - "5432:10000"
     volumes:
       - db_data:/var/lib/postgresql/data
 
