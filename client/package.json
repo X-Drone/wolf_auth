@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack serve --mode development",
+    "dev": "webpack serve --mode development & uvicorn main:app --reload --host 0.0.0.0 --port 8000",
     "build": "webpack --mode production",
     "start": "webpack serve --mode production"
   },

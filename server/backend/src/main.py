@@ -15,19 +15,35 @@ import time
 from sqlalchemy import exc
 import logging
 
-app = FastAPI()
+app = FastAPI(debug=settings.debug)
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000"] if settings.debug else ["https://wolf_auth.laureni.synology.me.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Database setup
-engine = create_engine(settings.database_url)
+# Database setup - теперь зависит от режима
+if settings.debug:
+    # Для разработки используем SQLite
+    engine = create_engine(
+        settings.local_db_path,
+        connect_args={"check_same_thread": False}  # для SQLite
+    )
+    print("Using SQLite for development")
+else:
+    # Для продакшена используем PostgreSQL
+    engine = create_engine(
+        settings.database_url,
+        pool_size=settings.database_pool_size,
+        pool_timeout=settings.database_pool_timeout,
+        pool_recycle=300
+    )
+    print("Using PostgreSQL for production")
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -35,12 +51,22 @@ Base = declarative_base()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
-# Add this after database setup code
 def wait_for_db(max_retries=5, retry_interval=5):
+    if settings.debug:
+        # Для SQLite не нужно ждать подключения
+        try:
+            db = SessionLocal()
+            db.execute("SELECT 1")
+            db.close()
+            logging.info("Successfully connected to SQLite")
+            return
+        except Exception as e:
+            logging.error(f"SQLite connection failed: {e}")
+            raise
+    
     retries = 0
     while retries < max_retries:
         try:
-            # Try to connect to the database
             db = SessionLocal()
             db.execute("SELECT 1")
             db.close()
@@ -48,13 +74,10 @@ def wait_for_db(max_retries=5, retry_interval=5):
             return
         except exc.OperationalError as e:
             retries += 1
-            logging.warning(f"Database connection attempt {retries} failed. Retrying in {retry_interval} seconds...")
+            logging.warning(f"Database connection attempt {retries} failed: {e}. Retrying in {retry_interval} seconds...")
             time.sleep(retry_interval)
     
     raise Exception("Could not connect to the database")
-
-# Call this before creating tables
-#wait_for_db()
 
 # Models
 class User(Base):
@@ -181,4 +204,4 @@ async def read_users_me(
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "debug": settings.debug}
