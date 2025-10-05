@@ -5,15 +5,17 @@ from sqlalchemy.orm import Session
 from typing import Annotated
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
-from passlib.context import CryptContext
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from config import settings
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import time
 from sqlalchemy import exc
 import logging
+import hashlib
+import secrets
+
+from models import User as UserModel, Base  # ← Импортируем модель и Base
 
 app = FastAPI(debug=settings.debug)
 
@@ -45,10 +47,42 @@ else:
     print("Using PostgreSQL for production")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password hashing (встроенный)
+def get_password_hash(password: str):
+    # Преобразуем строку в байты
+    password_bytes = password.encode('utf-8')
+
+    # Генерируем соль
+    salt = secrets.token_bytes(32)
+    # Хешируем с помощью PBKDF2
+    iterations = 100000
+    hash_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, iterations)
+    # Сохраняем как строку: iterations$salt$hash
+    salt_hex = salt.hex()
+    hash_hex = hash_bytes.hex()
+    return f"{iterations}${salt_hex}${hash_hex}"
+
+def verify_password(plain_password, hashed_password):
+    # Преобразуем строку в байты
+    password_bytes = plain_password.encode('utf-8')
+
+    # Разбираем строку хеша
+    parts = hashed_password.split('$')
+    if len(parts) != 3:
+        raise ValueError("Invalid hash format")
+    iterations = int(parts[0])
+    salt_hex = parts[1]
+    stored_hash_hex = parts[2]
+    # Декодируем соль и хеш
+    salt = bytes.fromhex(salt_hex)
+    stored_hash = bytes.fromhex(stored_hash_hex)
+    # Хешируем введенный пароль
+    hash_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, iterations)
+    # Сравниваем хеши
+    return secrets.compare_digest(hash_bytes, stored_hash)
+
+# Security scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 def wait_for_db(max_retries=5, retry_interval=5):
@@ -63,7 +97,7 @@ def wait_for_db(max_retries=5, retry_interval=5):
         except Exception as e:
             logging.error(f"SQLite connection failed: {e}")
             raise
-    
+
     retries = 0
     while retries < max_retries:
         try:
@@ -76,32 +110,32 @@ def wait_for_db(max_retries=5, retry_interval=5):
             retries += 1
             logging.warning(f"Database connection attempt {retries} failed: {e}. Retrying in {retry_interval} seconds...")
             time.sleep(retry_interval)
-    
+
     raise Exception("Could not connect to the database")
-
-# Models
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-# Create tables
-Base.metadata.create_all(bind=engine)
 
 # Schemas
 class UserBase(BaseModel):
     email: str
     username: str
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
     password: str
+    telegram: str
+    email: str
+    username: str
 
-class User(UserBase):
+    @field_validator('password')
+    def validate_password_length(cls, v):
+        # Проверяем длину пароля в байтах
+        password_bytes = v.encode('utf-8')
+        if len(password_bytes) > 72:
+            raise ValueError('Password cannot be longer than 72 bytes')
+        return v
+
+class UserResponse(BaseModel):
     id: int
+    email: str
+    username: str
     created_at: datetime
 
     class Config:
@@ -121,12 +155,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -152,28 +180,31 @@ async def get_current_user(
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    
-    user = db.query(User).filter(User.username == token_data.username).first()
+
+    user = db.query(UserModel).filter(UserModel.username == token_data.username).first()
     if user is None:
         raise credentials_exception
     return user
 
 # Endpoints
-@app.post("/api/auth/register", response_model=User)
+@app.post("/api/auth/register", response_model=UserResponse)
 async def register(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.email == user.email).first()
+    # Проверить, существует ли пользователь с таким email
+    db_user = db.query(UserModel).filter(UserModel.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    db_user = db.query(User).filter(User.username == user.username).first()
+
+    # Проверить, существует ли пользователь с таким username
+    db_user = db.query(UserModel).filter(UserModel.username == user.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already taken")
-    
+
     hashed_password = get_password_hash(user.password)
-    db_user = User(
-        email=user.email,
+    db_user = UserModel(
         username=user.username,
-        hashed_password=hashed_password
+        email=user.email,
+        hashed_password=hashed_password,  # ← Правильное имя поля
+        telegram=user.telegram
     )
     db.add(db_user)
     db.commit()
@@ -185,23 +216,32 @@ async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(get_db)
 ):
-    user = db.query(User).filter(User.username == form_data.username).first()
+    # Проверяем, является ли form_data.username email-адресом
+    if "@" in form_data.username:
+        # Ищем пользователя по email
+        user = db.query(UserModel).filter(UserModel.email == form_data.username).first()
+    else:
+        # Ищем пользователя по username
+        user = db.query(UserModel).filter(UserModel.username == form_data.username).first()
+
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect email or username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    access_token = create_access_token(data={"sub": user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/api/users/me", response_model=User)
+    access_token = create_access_token(data={"sub": user.username})  # или user.email, если хотите
+    return {"access_token": access_token, "token_type": "bearer"}
+@app.get("/api/users/me", response_model=UserResponse)
 async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[UserModel, Depends(get_current_user)]
 ):
     return current_user
 
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy", "debug": settings.debug}
+
+# Create tables
+Base.metadata.create_all(bind=engine)

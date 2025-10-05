@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import '../styles/Login.css'; // создадим стили отдельно
 
 interface LoginFormData {
-  email: string;
+  identifier: string; // изменили с email на identifier
   password: string;
 }
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
+    identifier: '', // изменили с email на identifier
     password: ''
   });
   const [loading, setLoading] = useState(false);
@@ -28,16 +28,15 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      // Запрос к FastAPI backend
-      const response = await fetch('http://localhost:8000/api/auth/login', {
+      // Создаём FormData
+      const formDataToSend = new FormData();
+      formDataToSend.append('username', formData.identifier); // отправляем identifier как username
+      formDataToSend.append('password', formData.password);
+
+      const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        })
+        // Убираем Content-Type: application/json
+        body: formDataToSend
       });
 
       if (!response.ok) {
@@ -70,15 +69,15 @@ const Login: React.FC = () => {
         
         <form onSubmit={handleSubmit} className="login-form">
           <div className="input-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="identifier">Email или Имя пользователя</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="identifier"
+              name="identifier"
+              value={formData.identifier}
               onChange={handleChange}
               required
-              placeholder="Введите ваш email"
+              placeholder="Введите email или имя пользователя"
             />
           </div>
           

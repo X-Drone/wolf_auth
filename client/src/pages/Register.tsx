@@ -3,14 +3,16 @@ import '../styles/Register.css'; // создадим стили отдельно
 
 interface RegisterFormData {
   email: string;
+  username: string;    
   password: string;
   confirmPassword: string;
-  telegram: string;
+  telegram: string;   
 }
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState<RegisterFormData>({
     email: '',
+    username: '',      
     password: '',
     confirmPassword: '',
     telegram: ''
@@ -28,7 +30,7 @@ const Register: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.email || !formData.password || !formData.confirmPassword || !formData.telegram) {
+    if (!formData.email || !formData.username || !formData.password || !formData.confirmPassword || !formData.telegram) {
       setError('Пожалуйста, заполните все поля');
       return false;
     }
@@ -68,12 +70,13 @@ const Register: React.FC = () => {
 
     try {
       // Запрос к FastAPI backend
-      const response = await fetch('http://localhost:8000/api/auth/register', {
+      const response = await fetch('http://localhost:3001/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          username: formData.username,
           email: formData.email,
           password: formData.password,
           telegram: formData.telegram
@@ -91,6 +94,7 @@ const Register: React.FC = () => {
       // Очистка формы после успешной регистрации
       setFormData({
         email: '',
+        username: '',      
         password: '',
         confirmPassword: '',
         telegram: ''
@@ -114,6 +118,18 @@ const Register: React.FC = () => {
         {success && <div className="success-message">{success}</div>}
         
         <form onSubmit={handleSubmit} className="register-form">
+          <div className="input-group">
+            <label htmlFor="username">Имя пользователя</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              placeholder="Введите имя пользователя"
+            />
+          </div>
           <div className="input-group">
             <label htmlFor="email">Email</label>
             <input
