@@ -49,7 +49,7 @@ const Login: React.FC = () => {
       localStorage.setItem('token', data.access_token);
       
       // Перенаправление на главную страницу
-      window.location.href = '/';
+      window.location.href = '/profile';
     } catch (err: any) {
       setError(err.message || 'An error occurred during login');
     } finally {
