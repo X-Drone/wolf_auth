@@ -1,0 +1,525 @@
+/* src/pages/Profile.css */
+
+/* Определяем цвета из логина */
+:root {
+  --primary: #667eea; /* Светло-синий */
+  --secondary: #764ba2; /* Фиолетовый */
+  --light: #f8fafc; /* Светлый фон */
+  --dark: #0f172a; /* Тёмный текст */
+  --text: #1e293b; /* Основной текст */
+  --text-light: #f1f5f9; /* Светлый текст */
+  --success: #2ecc71; /* Зелёный для онлайн */
+  --danger: #ef4444; /* Красный для кнопки выхода */
+  --border-radius: 16px; /* Скругления из логина */
+  --shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* Тень из логина */
+  --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15); /* Более сильная тень при наведении */
+  --transition: all 0.3s ease;
+  --border-color: #e1e5e9; /* Цвет границ из логина */
+  --input-focus: rgba(102, 126, 234, 0.1); /* Фокусное свечение из логина */
+
+  /* Цвета для тёмного режима */
+  --dark-bg-primary: #1a202c;
+  --dark-bg-secondary: #2d3748;
+  --dark-card-bg: #2d3748;
+  --dark-text: #e2e8f0;
+  --dark-border-color: #4a5568;
+  --dark-light: #2d3748;
+}
+
+body {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); /* Градиент из логина */
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+/* Темный режим */
+body.dark-mode {
+  background: linear-gradient(135deg, var(--dark-bg-primary) 0%, var(--dark-bg-secondary) 100%);
+  color: var(--dark-text);
+}
+
+/* Основной контейнер профиля */
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem 1rem; /* Отступы по бокам и сверху */
+  box-sizing: border-box;
+}
+
+.profile-card {
+  background: white; /* Белый фон из логина */
+  border-radius: var(--border-radius); /* Скругления из логина */
+  box-shadow: var(--shadow); /* Тень из логина */
+  padding: 2rem; /* Стандартный отступ */
+  width: 100%;
+  max-width: 800px; /* Шире для лучшего размещения */
+  transition: var(--transition);
+  margin-top: 1rem;
+  position: relative; /* Для позиционирования кнопок */
+}
+
+/* Темный режим для карточки */
+body.dark-mode .profile-card {
+  background: var(--dark-card-bg);
+  color: var(--dark-text);
+}
+
+.profile-card:hover {
+  box-shadow: var(--shadow-hover); /* Усиленная тень при наведении */
+  transform: translateY(-5px); /* Подъём при наведении */
+}
+
+/* Кнопка "К прошлому сайту" */
+.back-button {
+  position: absolute; /* Абсолютное позиционирование внутри .profile-card */
+  top: 1rem;
+  left: 1rem; /* В левом верхнем углу */
+  padding: 0.6rem 1.2rem; /* Размеры кнопки */
+  background: linear-gradient(135deg, #cbd5e1 0%, #a0aec0 100%); /* Градиент для нейтральной кнопки */
+  color: white;
+  border: none;
+  border-radius: 10px; /* Скругления кнопки из логина */
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: var(--transition);
+  z-index: 10; /* Чтобы кнопка была поверх других элементов */
+  display: flex; /* Для иконки */
+  align-items: center;
+  gap: 8px; /* Промежуток между иконкой и текстом */
+}
+
+.back-button:hover {
+  transform: translateY(-2px); /* Подъём при наведении */
+  box-shadow: 0 7px 14px rgba(203, 213, 225, 0.3); /* Тень при наведении */
+}
+
+/* Кнопка выхода */
+.logout-button {
+  position: absolute; /* Абсолютное позиционирование внутри .profile-card */
+  top: 1rem;
+  right: 1rem; /* В правом верхнем углу */
+  padding: 0.6rem 1.2rem; /* Размеры кнопки */
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); /* Градиент из логина */
+  color: white;
+  border: none;
+  border-radius: 10px; /* Скругления кнопки из логина */
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: var(--transition);
+  z-index: 10; /* Чтобы кнопка была поверх других элементов */
+}
+
+.logout-button:hover {
+  transform: translateY(-2px); /* Подъём при наведении */
+  box-shadow: 0 7px 14px rgba(102, 126, 234, 0.3); /* Тень при наведении из логина */
+}
+
+/* Заголовок профиля */
+.profile-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color); /* Цвет границы из логина */
+}
+
+/* Темный режим для заголовка */
+body.dark-mode .profile-header {
+  border-bottom: 1px solid var(--dark-border-color);
+}
+
+.avatar-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 120px; /* Уменьшенный размер */
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Темный режим для аватара */
+body.dark-mode .avatar {
+  border-color: var(--dark-card-bg);
+}
+
+.avatar-badge {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: var(--primary); /* Цвет из градиента */
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.user-info h1 {
+  color: var(--text); /* Основной цвет текста */
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 600; /* Жирный шрифт */
+}
+
+.user-info p {
+  color: #666; /* Цвет текста из логина */
+  margin: 0.2rem 0;
+}
+
+/* Темный режим для текста в профиле */
+body.dark-mode .user-info h1,
+body.dark-mode .user-info p {
+  color: var(--dark-text);
+}
+
+/* Кнопки профиля (Редактировать, Настройки, Telegram, Режим) */
+.profile-buttons {
+  display: flex;
+  justify-content: center; /* Центрируем кнопки */
+  gap: 10px; /* Промежуток между кнопками */
+  margin-top: 1rem; /* Отступ сверху */
+  flex-wrap: wrap; /* Перенос на новую строку при необходимости */
+}
+
+.profile-button {
+  padding: 0.6rem 1.2rem; /* Размеры кнопки */
+  background: linear-gradient(135deg, #a0aec0 0%, #718096 100%); /* Градиент для второстепенной кнопки */
+  color: white;
+  border: none;
+  border-radius: 10px; /* Скругления кнопки из логина */
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: var(--transition);
+  display: flex; /* Для иконки */
+  align-items: center;
+  gap: 8px; /* Промежуток между иконкой и текстом */
+}
+
+.profile-button:hover {
+  transform: translateY(-2px); /* Подъём при наведении */
+  box-shadow: 0 7px 14px rgba(160, 174, 192, 0.3); /* Тень при наведении */
+}
+
+/* Кнопка режима (светлый/тёмный) */
+.mode-toggle-button {
+  background: linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%); /* Градиент для кнопки режима */
+}
+
+.mode-toggle-button:hover {
+  box-shadow: 0 7px 14px rgba(79, 209, 197, 0.3); /* Тень при наведении для кнопки режима */
+}
+
+/* Секция сайтов */
+.sites-section {
+  margin-bottom: 2rem; /* Отступ перед следующей секцией */
+}
+
+.section-title {
+  color: var(--text); /* Цвет текста */
+  border-bottom: 2px solid var(--primary); /* Цвет границы подчёркивания */
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Темный режим для заголовков секций */
+body.dark-mode .section-title {
+  color: var(--dark-text);
+  border-bottom: 2px solid var(--primary);
+}
+
+.sites-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.site-link {
+  flex: 1 1 140px; /* Гибкая ширина */
+  padding: 12px 15px;
+  background-color: var(--light); /* Светлый фон кнопки */
+  color: var(--text); /* Цвет текста */
+  border: 2px solid var(--border-color); /* Граница из логина */
+  border-radius: 10px; /* Скругления из логина */
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Темный режим для ссылок на сайты */
+body.dark-mode .site-link {
+  background-color: var(--dark-light);
+  color: var(--dark-text);
+  border-color: var(--dark-border-color);
+}
+
+.site-link:hover {
+  background-color: var(--primary); /* Цвет при наведении */
+  color: white;
+  border-color: var(--primary); /* Цвет границы при наведении */
+  transform: scale(1.03); /* Легкое увеличение */
+}
+
+.site-icon {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+/* Кнопки вкладок */
+.tabs {
+  display: flex;
+  gap: 10px; /* Промежуток между вкладками */
+  margin-bottom: 20px;
+  background-color: var(--light); /* Светлый фон для табов */
+  border-radius: 12px; /* Скругления */
+  padding: 5px;
+  overflow: hidden; /* Обрезаем острые углы внутренних кнопок */
+  justify-content: center; /* Центрируем вкладки */
+}
+
+/* Темный режим для табов */
+body.dark-mode .tabs {
+  background-color: var(--dark-light);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px 20px; /* Побольше padding */
+  background-color: transparent;
+  color: #555; /* Цвет текста из логина */
+  border: none;
+  border-radius: 10px; /* Скругления */
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: var(--transition);
+  text-align: center;
+  display: flex; /* Для иконки */
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Промежуток между иконкой и текстом */
+}
+
+/* Темный режим для кнопок табов */
+body.dark-mode .tab-button {
+  color: var(--dark-text);
+}
+
+/* Убираем скругления для соседних кнопок */
+.tab-button:not(:last-child) {
+  margin-right: 5px;
+}
+
+.tab-button.active {
+  background: white; /* Белый фон для активной */
+  color: var(--primary); /* Цвет текста активной */
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* Темный режим для активной кнопки таба */
+body.dark-mode .tab-button.active {
+  background: var(--dark-card-bg);
+  color: var(--primary);
+}
+
+.tab-button:hover:not(.active) {
+  background-color: #e2e8f0; /* Лёгкий ховер для неактивной */
+}
+
+/* Темный режим для ховера неактивной кнопки таба */
+body.dark-mode .tab-button:hover:not(.active) {
+  background-color: var(--dark-border-color);
+}
+
+/* Контент вкладок */
+.tab-content {
+  background-color: var(--light); /* Светлый фон для контента */
+  border-radius: 10px; /* Скругления из логина */
+  padding: 20px;
+  min-height: 200px; /* Минимальная высота */
+  border: 1px solid var(--border-color); /* Граница */
+}
+
+/* Темный режим для контента табов */
+body.dark-mode .tab-content {
+  background-color: var(--dark-light);
+  border-color: var(--dark-border-color);
+}
+
+/* Стили для карточки друга */
+.friend-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px; /* Скругления из логина */
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Лёгкая тень */
+  transition: var(--transition);
+  margin-bottom: 1rem;
+}
+
+/* Темный режим для карточки друга */
+body.dark-mode .friend-card {
+  background: var(--dark-card-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.friend-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Более заметная тень при наведении */
+}
+
+.friend-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+  border: 2px solid var(--border-color); /* Граница аватара */
+}
+
+/* Темный режим для аватара друга */
+body.dark-mode .friend-avatar {
+  border-color: var(--dark-border-color);
+}
+
+.friend-info {
+  flex: 1;
+}
+
+.friend-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+/* Темный режим для имени друга */
+body.dark-mode .friend-name {
+  color: var(--dark-text);
+}
+
+.friend-status {
+  font-size: 0.85rem;
+  color: #888; /* Цвет статуса */
+}
+
+.friend-status.online {
+  color: var(--success); /* Зелёный для онлайн */
+}
+
+.friend-status.offline {
+  color: #95a5a6; /* Серый для оффлайн */
+}
+
+/* Темный режим для статуса друга */
+body.dark-mode .friend-status {
+  color: #a0aec0;
+}
+
+/* Стили для элемента уведомления */
+.notification-item {
+  padding: 1rem;
+  border-radius: 8px; /* Скругления из логина */
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Лёгкая тень */
+  transition: var(--transition);
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column; /* Для лучшего размещения времени на мобильных */
+  align-items: flex-start;
+}
+
+/* Темный режим для элемента уведомления */
+body.dark-mode .notification-item {
+  background: var(--dark-card-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.notification-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Более заметная тень при наведении */
+}
+
+.notification-text {
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+/* Темный режим для текста уведомления */
+body.dark-mode .notification-text {
+  color: var(--dark-text);
+}
+
+.notification-time {
+  align-self: flex-end; /* Прижимаем время к правому краю */
+  font-size: 0.8rem;
+  color: #888; /* Цвет времени */
+  font-style: italic;
+}
+
+/* Темный режим для времени уведомления */
+body.dark-mode .notification-time {
+  color: #a0aec0;
+}
+.margin {
+    padding-top : 10px;
+}
+/* Адаптивность */
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 1.5rem;
+  }
+  .avatar {
+    width: 100px;
+    height: 100px;
+  }
+  .profile-buttons {
+    flex-direction: column; /* На мобильных кнопки в столбик */
+    align-items: center;
+  }
+  .tabs {
+    flex-direction: column; /* На мобильных вкладки в столбик */
+    gap: 5px;
+  }
+  .tab-button {
+    justify-content: flex-start; /* На мобильных текст слева */
+    margin-right: 0; /* Убираем отступ */
+  }
+  .notification-time {
+    align-self: flex-start; /* Меняем позицию времени на мобильных */
+    margin-top: 0.3rem;
+  }
+  .back-button, .logout-button {
+    top: 0.8rem; /* Меньше отступ сверху на мобильных */
+  }
+}
