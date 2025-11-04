@@ -3,7 +3,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Общие настройки
-    secret_key: str = "your-secret-key-here"
+    secret_key: str = "fuck-you-key"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     

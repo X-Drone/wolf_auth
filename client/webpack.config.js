@@ -67,5 +67,23 @@ module.exports = {
       }
     ]
   },
-  mode: "development"
+  mode: "development",
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all",
+          priority: -10,
+        },
+      },
+    },
+  },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
+  }
 };
