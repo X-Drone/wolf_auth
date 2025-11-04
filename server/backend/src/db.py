@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import sessionmaker
 
-from .config import settings
+from config import settings
 
 class DB:
     def __init__(self):

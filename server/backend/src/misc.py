@@ -4,7 +4,7 @@ import logging
 import hashlib
 import secrets
 
-from .config import settings
+from config import settings
 
 
 # Password hashing (встроенный)

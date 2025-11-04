@@ -4,16 +4,16 @@
   "main": "index.js",
   "scripts": {
     "install-client": "cd client && npm install",
-    "install-server": "cd server/backend && pip install -r requirements.txt",
+    "install-server": "cd server/backend && python -m venv venv && venv\\Scripts\\pip install -r requirements.txt",
     "install-all": "npm run install-client && npm run install-server",
 
-    "frontend": "cd client && npm start",
-    "backend": "cd server/backend/src && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+    "client": "cd client && npm start",
+    "server": "cd server/backend/src && ..\\venv\\Scripts\\python -m uvicorn main:app --reload --host 0.0.0.0 --port 3003",
 
-    "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "dev": "concurrently \"npm run client\" \"npm run server\"",
 
     "build": "cd client && npm run build",
-    "start": "npm run backend"
+    "start": "npm run server"
   },
   "repository": {
     "type": "git",

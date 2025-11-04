@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import { Routes, Route } from 'react-router-dom';
 import { Settings } from 'lucide-react';
 import ProtectedRoute from '../components/ProtectedRoute';
+
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
 const Profile = lazy(() => import("../pages/Profile"));
