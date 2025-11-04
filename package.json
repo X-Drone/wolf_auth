@@ -12,8 +12,8 @@
 
     "dev": "concurrently \"npm run client\" \"npm run server\"",
 
-    "build": "cd client && npm run build",
-    "start": "npm run server"
+    "build": "concurrently \"cd client && npm run build\" \"cd server/backend && docker-compose build\"",
+    "start": "cd server/backend && docker-compose down && docker-compose up"
   },
   "repository": {
     "type": "git",
