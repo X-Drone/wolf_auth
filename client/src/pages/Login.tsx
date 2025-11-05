@@ -33,7 +33,7 @@ const Login: React.FC = () => {
       formDataToSend.append('username', formData.identifier); // отправляем identifier как username
       formDataToSend.append('password', formData.password);
 
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const response = await fetch('http://localhost:3003/api/auth/login', {
         method: 'POST',
         // Убираем Content-Type: application/json
         body: formDataToSend
