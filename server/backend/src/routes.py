@@ -4,13 +4,14 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from db import db
-from models import UserCreate, UserResponse, User, Token
+from models import User
+from schemas import UserCreate, UserResponse, Token
 from misc import get_password_hash, verify_password, create_access_token
 from auth import get_current_user
 
 router = APIRouter()
 
-@router.post("/api/auth/register", response_model=UserResponse)
+@router.post("/auth/register", response_model=UserResponse)
 def register(user: UserCreate, db_s: Session = Depends(db.get_db)):
     # Проверить, существует ли пользователь с таким email
     db_user = db_s.query(User).filter(User.email == user.email).first()
@@ -34,7 +35,7 @@ def register(user: UserCreate, db_s: Session = Depends(db.get_db)):
     db_s.refresh(db_user)
     return db_user
 
-@router.post("/api/auth/login", response_model=Token)
+@router.post("/auth/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db_s: Session = Depends(db.get_db)):
     if "@" in form_data.username:
         user = db_s.query(User).filter(User.email == form_data.username).first()
@@ -51,10 +52,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db_s: Session = Depe
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.get("/api/users/me", response_model=UserResponse)
+@router.get("/users/me", response_model=UserResponse)
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
-@router.get("/api/health")
+@router.get("/health")
 def health_check():
     return {"status": "healthy", "debug": db.engine.url if hasattr(db.engine, 'url') else str(db.engine)}
