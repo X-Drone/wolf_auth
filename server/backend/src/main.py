@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from db import db
 from models import Base
-from routes import router
+from api import router
 
 app = FastAPI(debug=settings.debug)
 

@@ -18,9 +18,9 @@
 **Response (201):**
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000",
   "username": "john_doe",
   "email": "john@example.com",
+  "telegram": "@jDoe",
   "created_at": "2025-11-13T10:30:00Z"
 }
 ```
@@ -40,12 +40,7 @@
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "bearer",
-  "user": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "username": "john_doe",
-    "email": "john@example.com"
-  }
+  "token_type": "bearer"
 }
 ```
 
@@ -64,13 +59,10 @@ Authorization: Bearer {access_token}
 **Response (200):**
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000",
   "username": "john_doe",
   "email": "john@example.com",
-  "avatar_url": "https://example.com/avatar.jpg",
-  "bio": "Software developer",
-  "created_at": "2025-11-13T10:30:00Z",
-  "updated_at": "2025-11-13T15:45:00Z"
+  "telegram": "@jDoe",
+  "created_at": "2025-11-13T10:30:00Z"
 }
 ```
 
@@ -111,10 +103,9 @@ Authorization: Bearer {access_token}
 **Response (200):**
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440001",
   "username": "jane_smith",
-  "avatar_url": "https://example.com/avatar2.jpg",
-  "bio": "Designer and artist",
+  "email": "jane@example.com",
+  "telegram": "@jSmith",
   "created_at": "2025-10-01T08:15:00Z",
   "friends_count": 15,
   "is_friend": false
@@ -138,13 +129,11 @@ Authorization: Bearer {access_token}
 {
   "friends": [
     {
-      "id": "550e8400-e29b-41d4-a716-446655440001",
       "username": "jane_smith",
       "avatar_url": "https://example.com/avatar2.jpg",
       "added_at": "2025-11-10T09:30:00Z"
     },
     {
-      "id": "550e8400-e29b-41d4-a716-446655440002",
       "username": "bob_wilson",
       "avatar_url": "https://example.com/avatar3.jpg",
       "added_at": "2025-11-05T14:20:00Z"
@@ -188,7 +177,6 @@ Authorization: Bearer {access_token}
 {
   "status": "accepted",
   "friend": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
     "username": "john_doe",
     "avatar_url": "https://example.com/avatar.jpg",
     "added_at": "2025-11-13T16:05:00Z"
@@ -207,8 +195,7 @@ Authorization: Bearer {access_token}
 **Response (200):**
 ```json
 {
-  "status": "rejected",
-  "message": "Friend request rejected successfully"
+  "status": "rejected"
 }
 ```
 
@@ -240,14 +227,12 @@ Authorization: Bearer {access_token}
 {
   "suggestions": [
     {
-      "id": "550e8400-e29b-41d4-a716-446655440003",
       "username": "alice_wonder",
       "avatar_url": "https://example.com/avatar4.jpg",
       "mutual_friends": 3,
       "reason": "mutual_friends"
     },
     {
-      "id": "550e8400-e29b-41d4-a716-446655440004",
       "username": "charlie_brown",
       "avatar_url": "https://example.com/avatar5.jpg",
       "mutual_friends": 1,
