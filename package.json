@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "install-client": "npm --prefix client install",
-    "install-server": "python3.12 -m venv server/backend/.venv && node scripts/install-backend.js",
+    "install-server": "python -m venv server/backend/.venv && node scripts/install-backend.js",
     "install-all": "npm run install-client && npm run install-server",
 
     "client": "npm --prefix client start",
