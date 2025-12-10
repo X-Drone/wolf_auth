@@ -1,5 +1,4 @@
-# app/routes.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
@@ -10,9 +9,11 @@ from auth import get_current_user
 
 router = APIRouter()
 
+
 @router.get("/me", response_model=UserResponse)
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
+
 
 @router.get("/me/achievements")
 def get_user_achievements(current_user: User = Depends(get_current_user), db_s: Session = Depends(db.get_db)):
@@ -23,8 +24,32 @@ def get_user_achievements(current_user: User = Depends(get_current_user), db_s: 
         "achievements": achievements,
         "total": len(achievements)
     }
+@router.get("/search")
+def search_users(query: str, current_user: User = Depends(get_current_user), db_s: Session = Depends(db.get_db)):
+    users = db_s.query(User).filter(
+        or_(
+            User.username.ilike(f"%{query}%"),
+            User.email.ilike(f"%{query}%")
+        )
+    ).all()
 
-@router.get("/users/{user_id}")
+    result = []
+    for user in users:
+        if user.id == current_user.id:
+            continue
+        result.append({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "telegram": user.telegram
+        })
+
+    return {
+        "results": result,
+        "total": len(result)
+    }
+
+@router.get("/{user_id}")
 def get_user_by_id(user_id: int, current_user: User = Depends(get_current_user), db_s: Session = Depends(db.get_db)):
     user = db_s.query(User).filter(User.id == user_id).first()
     if not user:
@@ -45,3 +70,6 @@ def get_user_by_id(user_id: int, current_user: User = Depends(get_current_user),
         "friends_count": 0,
         "is_friend": is_friend
     }
+
+
+

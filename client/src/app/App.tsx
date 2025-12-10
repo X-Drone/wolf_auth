@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '../pages/LoginPage';
 import { ProfilePage } from '../pages/ProfilePage';
-import { FriendsPage } from '../pages/FriendsPage';
+import { FriendsPage } from '../pages/FriendsPage'; // Импортируем новую страницу
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/friends" element={<FriendsPage />} />
+        <Route path="/find-friends" element={<FriendsPage />} /> {/* Новый маршрут */}
       </Routes>
     </Router>
   );
