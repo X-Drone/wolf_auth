@@ -32,7 +32,7 @@ export const LoginPage: React.FC = () => {
           <span className="gradient-bg">{isRegister ? 'Регистрация' : 'Вход в систему'}</span>
         </h1>
 
-        {isRegister ? <RegisterForm /> : <LoginForm />}
+        {isRegister ? <RegisterForm onSwitchToLogin={() => setIsRegister(false)} /> : <LoginForm onSwitchToRegister={() => setIsRegister(true)} />}
 
         <p style={{ textAlign: 'center', marginTop: '1.5rem', color: '#cccccc' }}>
           {isRegister ? 'Уже есть аккаунт?' : 'Нет аккаунта?'}{' '}

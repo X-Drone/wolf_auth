@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Button } from '../../../shared/ui/Button';
 import { Input } from '../../../shared/ui/Input';
 import { register } from '../api/authApi';
-import { useNavigate } from 'react-router-dom';
 
-export const RegisterForm: React.FC = () => {
-  const navigate = useNavigate();
+interface RegisterFormProps {
+  onSwitchToLogin: () => void; // Функция для переключения на вход
+}
+
+export const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [telegram, setTelegram] = useState('');
@@ -17,8 +19,7 @@ export const RegisterForm: React.FC = () => {
     try {
       const result = await register({ username, email, telegram, password });
       console.log('Регистрация успешна:', result);
-      alert('Регистрация успешна! Пожалуйста, войдите.');
-      navigate('/login');
+      onSwitchToLogin(); // Переключаемся на форму входа
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -62,6 +63,7 @@ export const RegisterForm: React.FC = () => {
       <Button type="submit" variant="gradient" style={{ width: '100%' }}>
         Зарегистрироваться
       </Button>
+      {/* Убрали лишний текст */}
     </form>
   );
 };
