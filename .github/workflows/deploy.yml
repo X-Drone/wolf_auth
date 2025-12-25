@@ -22,9 +22,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+        working-directory: ./client
 
       - name: Build with Webpack
         run: npm run build
+        working-directory: ./client
 
       - name: Deploy frontend
         uses: appleboy/scp-action@v0.1.6
@@ -62,7 +64,7 @@ jobs:
             cd /volume1/web/wolf_auth/server
             docker-compose down
             docker-compose up -d --build
-            echo "Backend started on port 3001"
+            echo "Backend started on port 3003"
 
       # ========== VERIFY ==========
       - name: Verify deployment

@@ -136,5 +136,10 @@ dist
 .pnp.*
 node_modules
 
+# Python virtual environments
 venv
 .venv
+
+# Python bytecode
+*.pyc
+__pycache__/
