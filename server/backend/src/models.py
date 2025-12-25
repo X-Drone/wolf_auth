@@ -2,8 +2,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
-from pydantic import BaseModel, field_validator
-
 Base = declarative_base()
 
 class User(Base):
@@ -14,37 +12,50 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     telegram = Column(String, nullable=True)
+    bio = Column(String, nullable=True)
+    avatar_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-# Pydantic schemas (Pydantic v2 style)
-class UserBase(BaseModel):
-    email: str
-    username: str
+class Friend(Base):
+    __tablename__ = "friend"
 
-class UserCreate(BaseModel):
-    password: str
-    telegram: str | None = None
-    email: str
-    username: str
+    id = Column(Integer, primary_key=True, index=True)
+    id_user = Column(Integer, index=True)
+    id_friend = Column(Integer, index=True)
 
-    @field_validator('password')
-    def validate_password_length(cls, v):
-        password_bytes = v.encode('utf-8')
-        if len(password_bytes) > 72:
-            raise ValueError('Password cannot be longer than 72 bytes')
-        return v
+class Requests(Base):
+    __tablename__ = "requests"
 
-class UserResponse(BaseModel):
-    id: int
-    email: str
-    username: str
-    created_at: datetime
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, index=True)
+    recipient_id = Column(Integer, index=True)
+    status = Column(String)  # e.g., pending, accepted, rejected
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    model_config = {"from_attributes": True}  # pydantic v2: allow model creation from ORM objects
+class Notification(Base):
+    __tablename__ = "notification"
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
+    id = Column(Integer, primary_key=True, index=True)
+    id_user = Column(Integer, index=True)
+    type = Column(String)
+    message = Column(String)
+    data = Column(String) # json
+    is_read = Column(Integer, default=0) # 0 - unread, 1 - read
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-class TokenData(BaseModel):
-    username: str | None = None
+class Achievement(Base):
+    __tablename__ = "achievement"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String)
+    description = Column(String)
+    icon_url = Column(String)
+    rarity = Column(String)  # e.g., common, rare, epic, legendary
+
+class UserAchievement(Base):
+    __tablename__ = "user_achievement"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, index=True)
+    achievement_id = Column(Integer, index=True)
+    date_earned = Column(DateTime, default=datetime.utcnow)

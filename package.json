@@ -3,17 +3,19 @@
   "version": "1.1.0",
   "main": "index.js",
   "scripts": {
-    "install-client": "cd client && npm install",
-    "install-server": "cd server/backend && pip install -r requirements.txt",
+    "install-client": "npm --prefix client install",
+    "install-server": "python -m venv server/backend/.venv && node scripts/install-backend.js",
     "install-all": "npm run install-client && npm run install-server",
 
-    "frontend": "cd client && npm start",
-    "backend": "cd server/backend/src && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
+    "client": "npm --prefix client start",
+    "server": "node scripts/start-server.js",
 
-    "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "dev": "concurrently \"npm run client\" \"npm run server\"",
 
-    "build": "cd client && npm run build",
-    "start": "npm run backend"
+    "build-client": "npm --prefix client run build",
+    "build-server": "cd server && docker-compose build",
+    "build": "concurrently \"npm run build-client\" \"npm run build-server\"",
+    "start": "cd server && docker-compose down && docker-compose up"
   },
   "repository": {
     "type": "git",
