@@ -29,7 +29,6 @@ module.exports = {
             options: {
               postcssOptions: {
                 plugins: [
-                  //"@tailwindcss/postcss",
                   "postcss-nested",
                   "autoprefixer"
                 ]
@@ -46,14 +45,9 @@ module.exports = {
     })
   ],
   devServer: {
-    static: [
-      {
-        directory: path.resolve(__dirname, "public")
-      },
-      {
-        directory: path.resolve(__dirname, "dist")
-      }
-    ],
+    static: {
+      directory: path.resolve(__dirname, "public") // Без массива
+    },
     port: 3000,
     open: true,
     hot: true,
@@ -65,7 +59,10 @@ module.exports = {
         secure: false,
         changeOrigin: true
       }
+
     ]*/
+    //]
+    // Убираем setupMiddlewares - он вызывал проблему
   },
   mode: "development",
   optimization: {
