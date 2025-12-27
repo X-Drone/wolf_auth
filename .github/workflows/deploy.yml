@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "client/dist/"
-          target: "/volume1/web/wolf_auth/client"
+          target: "/volume1/web/wolf_auth/"
           rm: true
           overwrite: true
 
@@ -50,8 +50,9 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "server/"
-          target: "/volume1/web/wolf_auth/server"
+          target: "/volume1/web/wolf_auth/"
           rm: true
+          overwrite: true
 
       - name: Setup and start backend
         uses: appleboy/ssh-action@v1.0.0
