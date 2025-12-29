@@ -3,12 +3,14 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Общие настройки
-    secret_key: str = "fuck-you-key"
+    secret_key: str = "your-secret-key"
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     
     # Режим разработки
     debug: bool = False
+
+    url: str = "localhost:3000"
     
     # База данных
     database_url: str
@@ -19,6 +21,7 @@ class Settings(BaseSettings):
     local_db_path: str = "sqlite:///./test.db"  # для SQLite в dev режиме
     
     class Config:
-        env_file = ".env"
+        env_file = ".env",
+        extra="ignore"
 
 settings = Settings()
