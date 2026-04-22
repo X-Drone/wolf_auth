@@ -4,8 +4,8 @@ from sqlalchemy import or_
 from datetime import datetime
 from uuid import uuid4
 
-from db import db
-from models import User, Friend, Requests, Notification
+from db.db import db
+from db.models import User, Friend, Requests, Notification
 from auth import get_current_user
 
 router = APIRouter()

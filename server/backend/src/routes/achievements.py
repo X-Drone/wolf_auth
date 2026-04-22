@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from db import db
-from models import User, Friend, Achievement, UserAchievement
+from db.models import User, Friend, Achievement, UserAchievement
 from auth import get_current_user
 
 router = APIRouter()

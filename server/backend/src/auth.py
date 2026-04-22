@@ -3,8 +3,8 @@ from fastapi import Depends, HTTPException, status
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from db import db
-from models import User
+from db.db import db
+from db.models import User
 from schemas import TokenData
 from config import settings
 

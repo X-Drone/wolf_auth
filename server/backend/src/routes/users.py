@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
-from db import db
-from models import User, Friend, Achievement, UserAchievement
+from db.db import db
+from db.models import User, Friend, Achievement, UserAchievement
 from schemas import UserResponse
 from auth import get_current_user
 

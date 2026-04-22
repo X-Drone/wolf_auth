@@ -2,11 +2,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from jose import JWTError, jwt
 
-from db import db
-from models import User
-from schemas import UserCreate, UserResponse, Token
+from db.db import db
+from db.models import User
+from schemas import UserCreate, UserResponse, Token, TokenVerification, TokenVerificationResponse
 from misc import get_password_hash, verify_password, create_access_token
+from config import settings
 
 router = APIRouter()
 
@@ -50,3 +52,28 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db_s: Session = Depe
 
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/verify", response_model=TokenVerificationResponse)
+def verify_token(token_data: TokenVerification):
+    """
+    Проверить валидность JWT токена.
+    
+    Возвращает информацию о токене и его статус.
+    """
+    try:
+        payload = jwt.decode(token_data.token, settings.secret_key, algorithms=[settings.algorithm])
+        username: str = payload.get("sub")
+        if username is None:
+            return TokenVerificationResponse(
+                valid=False,
+                detail="Token does not contain a valid username"
+            )
+        return TokenVerificationResponse(
+            valid=True,
+            username=username
+        )
+    except JWTError as e:
+        return TokenVerificationResponse(
+            valid=False,
+            detail="Invalid or expired token"
+        )

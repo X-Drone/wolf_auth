@@ -1,4 +1,3 @@
-# app/routes.py
 from fastapi import APIRouter
 
 from db import db

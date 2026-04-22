@@ -1,11 +1,10 @@
-# app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
-from db import db
-from models import Base
-from api import router
+from db.db import db
+from db.models import Base
+from routes import router
 
 app = FastAPI(debug=settings.debug)
 

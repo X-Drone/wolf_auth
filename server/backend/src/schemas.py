@@ -34,3 +34,11 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+
+class TokenVerification(BaseModel):
+    token: str
+
+class TokenVerificationResponse(BaseModel):
+    valid: bool
+    username: str | None = None
+    detail: str | None = None
