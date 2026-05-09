@@ -141,5 +141,8 @@ venv
 .venv
 
 # Python bytecode
-*.pyc
+*.pyc[cod]
 __pycache__/
+
+# Database files
+*.db

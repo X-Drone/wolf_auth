@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "client/dist/"
-          target: "/volume1/web/wolf_auth/client"
+          target: "/volume1/web/wolf_auth/"
           rm: true
           overwrite: true
 
@@ -50,8 +50,9 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "server/"
-          target: "/volume1/web/wolf_auth/server"
+          target: "/volume1/web/wolf_auth/"
           rm: true
+          overwrite: true
 
       - name: Setup and start backend
         uses: appleboy/ssh-action@v1.0.0
@@ -62,6 +63,28 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /volume1/web/wolf_auth/server
+                        # Create .env file with ALL required variables
+            cat > .env <<EOL
+              # Development mode settings
+              DEBUG=true
+
+              # Security settings
+              SECRET_KEY=${{ secrets.SECRET_KEY }}
+              ALGORITHM=HS256
+              ACCESS_TOKEN_EXPIRE_MINUTES=300
+
+              # Database settings
+              DATABASE_URL=postgresql+psycopg://user:password@db/dbname
+              LOCAL_DB_PATH=sqlite:///./dev.db
+
+              # === CORS ===
+              CORS_ALLOW_ORIGIN_REGEX=${{ secrets.CORS_ALLOW_ORIGIN_REGEX }}
+            EOL
+
+            # Set secure permissions for .env
+            chmod 600 .env
+
+            # Deploy application
             docker-compose down
             docker-compose up -d --build
             echo "Backend started on port 3003"
