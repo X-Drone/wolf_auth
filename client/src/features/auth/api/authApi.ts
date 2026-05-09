@@ -22,6 +22,8 @@ interface LoginData {
 interface LoginResponse {
   access_token: string;   // "string"
   token_type: string;     // "string"
+  redirect_url?: string;  // Опциональное поле для редиректа на другой сервис
+  state?: string;         // Опциональное поле state для сохранения состояния (OAuth pattern)
 }
 
 const API_BASE_URL = 'http://localhost:3003';
@@ -48,14 +50,38 @@ export const register = async (data: RegisterData): Promise<RegisterResponse> =>
 
 /**
  * Вход в систему
+ * @param data - Данные для входа (email и пароль)
+ * @param redirectUrl - Опциональный URL для редиректа после успешного логина
+ * @param state - Опциональный state для сохранения состояния (OAuth pattern)
  */
-export const login = async (data: LoginData): Promise<LoginResponse> => {
+export const login = async (
+  data: LoginData,
+  redirectUrl?: string,
+  state?: string
+): Promise<LoginResponse> => {
   // Преобразуем в формат, который ожидает OAuth2PasswordRequestForm
   const formData = new URLSearchParams();
   formData.append('username', data.email);  // FastAPI ожидает "username", но ты передаешь email
   formData.append('password', data.password);
 
-  const res = await fetch(`${API_BASE_URL}/auth/login`, {
+  let url = `${API_BASE_URL}/auth/login`;
+  const params = new URLSearchParams();
+  
+  // Если указан redirectUrl, добавляем его как query параметр
+  if (redirectUrl) {
+    params.append('redirect_url', redirectUrl);
+  }
+
+  // Если указан state, добавляем его как query параметр
+  if (state) {
+    params.append('state', state);
+  }
+
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
