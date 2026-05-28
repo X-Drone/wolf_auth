@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3003';
+const API_BASE_URL = process.env.SERVER_URL;
 
 // Поиск пользователей
 export const searchUsers = async (query: string): Promise<{

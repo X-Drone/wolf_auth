@@ -27,7 +27,7 @@ class DB:
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         # IMPORTANT: tokenUrl — абсолютный путь который вы используете в роутере
         # добавляем ведущий слеш, чтобы OAuth2PasswordBearer строил правильный URL
-        self.oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+        self.oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
     def wait_for_db(self, max_retries=5, retry_interval=5):
         if settings.debug:

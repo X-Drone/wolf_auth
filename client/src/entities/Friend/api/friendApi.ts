@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3003';
+const API_BASE_URL = process.env.SERVER_URL;
 
 // Получение списка друзей
 export const getFriends = async (): Promise<any[]> => {

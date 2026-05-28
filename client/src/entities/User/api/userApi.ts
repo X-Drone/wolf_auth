@@ -1,6 +1,6 @@
 import { User } from '../model/types';
 
-const API_BASE_URL = 'http://localhost:3003';
+const API_BASE_URL = process.env.SERVER_URL;
 
 // Получение профиля текущего пользователя
 export const getCurrentUser = async (): Promise<User> => {

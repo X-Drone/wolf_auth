@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3003';
+const API_BASE_URL = process.env.SERVER_URL;
 
 // Получение списка уведомлений
 export const getNotifications = async (): Promise<any[]> => {

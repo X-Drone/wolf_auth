@@ -8,12 +8,14 @@ from db import db
 from .friends import router as friends_router
 from .auth import router as auth_router
 from .users import router as users_router
+from .roles import router as roles_router
 from .notifications import router as notifications_router
 from .achievements import router as achievements_router
 
 router = APIRouter()
 
 router.include_router(auth_router, prefix="/auth")
+router.include_router(roles_router, prefix="/roles")
 router.include_router(users_router, prefix="/users")
 router.include_router(friends_router, prefix="/friends")
 router.include_router(notifications_router, prefix="/notifications")
@@ -25,5 +27,6 @@ def health_check():
 
 
 __all__ = ["auth",
+           "roles", 
            "users",
            "router"]

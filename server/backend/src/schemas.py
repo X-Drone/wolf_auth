@@ -42,3 +42,24 @@ class TokenVerificationResponse(BaseModel):
     valid: bool
     username: str | None = None
     detail: str | None = None
+
+class RoleResponse(BaseModel):
+    id: int
+    name: str
+    description: str | None = None
+    
+    model_config = {"from_attributes": True}
+
+class RoleCreate(BaseModel):
+    name: str
+    description: str | None = None
+
+class UserRoleAssignment(BaseModel):
+    user_id: int
+    role_name: str
+
+class UserRolesResponse(BaseModel):
+    user_id: int
+    roles: list[RoleResponse]
+    
+    model_config = {"from_attributes": True}
