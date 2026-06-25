@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.SERVER_URL;
+const API_BASE_URL = '/api';
 
 // Получение списка уведомлений
 export const getNotifications = async (): Promise<any[]> => {

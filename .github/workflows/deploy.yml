@@ -13,51 +13,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ========== FRONTEND ==========
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-        working-directory: ./client
-      
-      - name: Copy .env file
-        run: echo "SERVER_URL=${{ secrets.SERVER_URL }}" > ./client/.env
-
-      - name: Build with Webpack
-        run: npm run build
-        working-directory: ./client
-
-      - name: Deploy frontend
-        uses: appleboy/scp-action@v0.1.6
+      # ========== COPY FILES TO SERVER ==========
+      - name: Copy project files to server
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "client/dist/"
-          target: "/volume1/web/wolf_auth/"
-          rm: true
+          source: "docker-compose.yml,client,server"
+          target: "/volume1/web/wolf_auth"
           overwrite: true
 
-
-      # ========== BACKEND ==========
-      - name: Deploy backend source
-        uses: appleboy/scp-action@v0.1.6
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "server/"
-          target: "/volume1/web/wolf_auth/"
-          rm: true
-          overwrite: true
-
-      - name: Setup and start backend
+      # ========== SETUP AND START SERVICES ==========
+      - name: Setup environment and start services
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -65,32 +34,30 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /volume1/web/wolf_auth/server/backend
-                        # Create .env file with ALL required variables
+            cd /volume1/web/wolf_auth
+            
             cat > .env <<EOL
-              # Development mode settings
-              DEBUG=true
-
-              # Security settings
-              SECRET_KEY=${{ secrets.SECRET_KEY }}
-              ALGORITHM=HS256
-              ACCESS_TOKEN_EXPIRE_MINUTES=300
-
-              # Database settings
-              DATABASE_URL=postgresql+psycopg://user:password@db/dbname
-              LOCAL_DB_PATH=sqlite:///./dev.db
-
-              # === CORS ===
-              CORS_ALLOW_ORIGIN_REGEX=${{ secrets.CORS_ALLOW_ORIGIN_REGEX }}
+            COMPOSE_PROJECT_NAME=wolf_auth
+            DATABASE_USER=postgres
+            DATABASE_PASSWORD=postgres
+            DATABASE_DB=wolf_auth
+            DEBUG=false
             EOL
 
-            # Set secure permissions for .env
-            chmod 600 .env
+            cat > server/.env <<EOL
+            DEBUG=false
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            ALGORITHM=HS256
+            ACCESS_TOKEN_EXPIRE_MINUTES=300
+            CORS_ALLOW_ORIGIN_REGEX=${{ secrets.CORS_ALLOW_ORIGIN_REGEX }}
+            EOL
 
-            # Deploy application
+            chmod 600 .env server/.env
+
             docker-compose down
             docker-compose up -d --build
-            echo "Backend started on port 3003"
+            
+            echo "Services started successfully"
 
       # ========== VERIFY ==========
       - name: Verify deployment
@@ -101,5 +68,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            ls -la /volume1/web/multi_draw
+            cd /volume1/web/wolf_auth
+            docker-compose ps
             echo "Deployed successfully"

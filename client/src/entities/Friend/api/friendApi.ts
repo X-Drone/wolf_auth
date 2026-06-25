@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.SERVER_URL;
+const API_BASE_URL = '/api';
 
 // Получение списка друзей
 export const getFriends = async (): Promise<any[]> => {

@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.SERVER_URL;
+const API_BASE_URL = '/api';
 
 // Поиск пользователей
 export const searchUsers = async (query: string): Promise<{
