@@ -1,5 +1,6 @@
 # app/models.py
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 Base = declarative_base()
@@ -15,6 +16,26 @@ class User(Base):
     bio = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationship to roles
+    roles = relationship("Role", secondary="user_roles", back_populates="users")
+
+class Role(Base):
+    __tablename__ = "roles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True)
+    description = Column(String, nullable=True)
+    
+    # Relationship to users
+    users = relationship("User", secondary="user_roles", back_populates="roles")
+
+class UserRole(Base):
+    __tablename__ = "user_roles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    role_id = Column(Integer, ForeignKey("roles.id"), index=True)
 
 class Friend(Base):
     __tablename__ = "friend"

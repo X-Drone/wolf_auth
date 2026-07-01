@@ -2,7 +2,7 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const backendDir = path.join(__dirname, '..', 'server', 'backend');
+const backendDir = path.join(__dirname, '..');
 const venvDir = path.join(backendDir, '.venv');
 
 function tryRun(cmd, args, options = {}) {

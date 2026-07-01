@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-const backendDir = path.join(__dirname, '..', 'server', 'backend');
+const backendDir = path.join(__dirname, '..');
 const envPath = path.join(backendDir, '.env');
 const envExamplePath = path.join(backendDir, '.env.example');
 
@@ -64,7 +64,7 @@ const args = [
   'main:app',
   '--reload',
   '--host', '0.0.0.0',
-  '--port', '3003'
+  '--port', '3001'
 ];
 
 console.log(`🚀 Starting backend using: ${python}`);

@@ -26,7 +26,7 @@ interface LoginResponse {
   state?: string;         // Опциональное поле state для сохранения состояния (OAuth pattern)
 }
 
-const API_BASE_URL = 'http://localhost:3003';
+const API_BASE_URL = '/api'; //process.env.SERVER_URL;
 
 /**
  * Регистрация нового пользователя

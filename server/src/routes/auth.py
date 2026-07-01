@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 from typing import Optional
 from pydantic import BaseModel
 
-from db.db import db
+from db import db
 from db.models import User
 from schemas import UserCreate, UserResponse, Token, TokenVerification, TokenVerificationResponse
 from misc import get_password_hash, verify_password, create_access_token

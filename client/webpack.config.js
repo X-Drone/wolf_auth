@@ -1,5 +1,6 @@
 ﻿const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: path.resolve(__dirname, "./src/index.tsx"),
@@ -42,6 +43,11 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./public/index.html"
+    }),
+    new Dotenv({
+      path: './.env', // Path to your .env file (default)
+      safe: true,     // Loads '.env.example' to verify the correct variables are set
+      systemvars: true // Allows loading system environment variables (useful for CI/CD)
     })
   ],
   devServer: {
@@ -52,15 +58,16 @@ module.exports = {
     open: true,
     hot: true,
     historyApiFallback: true,
-    /*proxy: [
+    proxy: [
       {
         context: ['/api'],
-        target: 'http://localhost:3003',
+        target: 'http://127.0.0.1:3003',
         secure: false,
-        changeOrigin: true
+        changeOrigin: true,
+        pathRewrite: { '^/api': '' }
       }
 
-    ]*/
+    ]
     //]
     // Убираем setupMiddlewares - он вызывал проблему
   },
